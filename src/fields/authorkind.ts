@@ -45,8 +45,6 @@ const isSnykPr = (pr: any): boolean => {
 export const getAuthorKind: typeof REQUIRED_FIELDS["Author Kind"]["getValue"] = async (octokit: PaginatedOctokit, pr: any) => {
     const BOTS = ["dependabot", "pre-commit-ci", "jupyterhub-bot"]
     if (BOTS.includes(pr.author.login) || isSnykPr(pr)) {
-        const isSnyk = isSnykPr(pr);
-        console.log(`PR #${pr.number} is from a bot (${pr.author.login}${isSnyk ? ", Snyk" : ""}), categorizing as "Bot".`);
         return "Bot";
     }
 
