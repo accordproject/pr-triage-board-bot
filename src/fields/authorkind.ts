@@ -20,9 +20,33 @@ const getMergedPRCount = memoize(async (octokit: Octokit, organization: string, 
     cacheKey: args => JSON.stringify(args)
 });
 
+const isSnykPr = (pr: any): boolean => {
+    if (typeof pr?.title === "string" && pr.title.startsWith("[Snyk]")) {
+        return true;
+    }
+
+    const commitLogins = new Set<string>();
+    for (const node of pr?.commits?.nodes ?? []) {
+        const commit = node?.commit;
+        const signer = commit?.signature?.signer?.login;
+        const author = commit?.author?.user?.login;
+        const committer = commit?.committer?.user?.login;
+
+        for (const login of [signer, author, committer]) {
+            if (login) {
+                commitLogins.add(login);
+            }
+        }
+    }
+
+    return commitLogins.has("snyk-bot");
+};
+
 export const getAuthorKind: typeof REQUIRED_FIELDS["Author Kind"]["getValue"] = async (octokit: PaginatedOctokit, pr: any) => {
     const BOTS = ["dependabot", "pre-commit-ci", "jupyterhub-bot"]
-    if (BOTS.includes(pr.author.login)) {
+    if (BOTS.includes(pr.author.login) || isSnykPr(pr)) {
+        const isSnyk = isSnykPr(pr);
+        console.log(`PR #${pr.number} is from a bot (${pr.author.login}${isSnyk ? ", Snyk" : ""}), categorizing as "Bot".`);
         return "Bot";
     }
 

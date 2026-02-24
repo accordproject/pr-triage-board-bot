@@ -42,6 +42,27 @@ query ($cursor: String, $searchQuery: String!) {
         login
       },
       title,
+      commits(first:1) {
+        nodes {
+          commit {
+            signature {
+              signer {
+                login
+              }
+            }
+            author {
+              user {
+                login
+              }
+            }
+            committer {
+              user {
+                login
+              }
+            }
+          }
+        }
+      }
     }
   }
   pageInfo {
