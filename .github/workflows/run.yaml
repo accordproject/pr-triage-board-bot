@@ -13,8 +13,9 @@ jobs:
   jupyterhub:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Run JupyterHub PR Triage Bot
-        uses: yuvipanda/pr-triage-board-bot@main
+        uses: ./
         with:
           organization: 'jupyterhub'
           project-number: '4'
