@@ -10,15 +10,15 @@ on:
 
 
 jobs:
-  jupyterhub:
+  accordproject:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run JupyterHub PR Triage Bot
+      - name: Run Accord Project PR Triage Bot
         uses: ./
         with:
-          organization: 'jupyterhub'
-          project-number: '4'
-          gh-app-id: '1793875'
-          gh-app-installation-id: '81302562'
+          organization: 'accordproject'
+          project-number: '29'
+          gh-app-id: '2856902'
+          gh-app-installation-id: '109864494'
           gh-app-private-key: ${{ secrets.PR_BOT_APP_PRIVATE_KEY }}
