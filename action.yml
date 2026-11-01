@@ -61,9 +61,11 @@ runs:
 
     - name: Setup GitHub App Private Key
       run: |
-        echo "${{ inputs.gh-app-private-key }}" > private-key.pem
+        printf '%s' "$GH_APP_PRIVATE_KEY" > private-key.pem
       shell: bash
       working-directory: ${{ github.action_path }}
+      env:
+        GH_APP_PRIVATE_KEY: ${{ inputs.gh-app-private-key }}
 
     - name: Run PR Triage Bot
       run: |
