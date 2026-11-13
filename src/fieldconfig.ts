@@ -5,6 +5,7 @@ import { getMaintainerEngagement } from './fields/maintainerengagement.js';
 import { getCIStatus } from './fields/cistatus.js';
 import { getMergeConflicts } from './fields/mergeconflicts.js'
 import { getApprovalStatus } from './fields/approvalstatus.js';
+import { labelValue } from './fields/ailabels.js';
 import type { PaginatedOctokit } from './utils.js';
 
 export type FieldDataType = "TEXT" | "NUMBER" | "DATE" | "SINGLE_SELECT";
@@ -60,6 +61,21 @@ export const FIELD_CONFIGS = {
             "Changes Requested",
             "Maintainer Approved"
         ]
+    },
+    // The next three read the labels the Accord Project agent network sets on PRs:
+    // ai/kind:* from its triage pass, ai/risk:* and ai/decision:* when it posts a review.
+    // The names match single-select fields that already exist on Accord Project's board.
+    "AI Kind": {
+        dataType: "SINGLE_SELECT",
+        options: ["docs", "typo", "bugfix", "feature", "refactor", "deps", "ci/build", "test", "spam", "unclear"]
+    },
+    "AI Risk Band": {
+        dataType: "SINGLE_SELECT",
+        options: ["low", "medium", "high"]
+    },
+    "AI Decision": {
+        dataType: "SINGLE_SELECT",
+        options: ["needs-changes", "needs-review"]
     }
 } as const satisfies Record<string, FieldConfig>;
 
@@ -114,5 +130,17 @@ export const REQUIRED_FIELDS: RequiredFieldsType = {
     "Approval Status": {
         ...FIELD_CONFIGS["Approval Status"],
         getValue: getApprovalStatus
+    },
+    "AI Kind": {
+        ...FIELD_CONFIGS["AI Kind"],
+        getValue: labelValue("ai/kind:", FIELD_CONFIGS["AI Kind"].options)
+    },
+    "AI Risk Band": {
+        ...FIELD_CONFIGS["AI Risk Band"],
+        getValue: labelValue("ai/risk:", FIELD_CONFIGS["AI Risk Band"].options)
+    },
+    "AI Decision": {
+        ...FIELD_CONFIGS["AI Decision"],
+        getValue: labelValue("ai/decision:", FIELD_CONFIGS["AI Decision"].options)
     }
 };
