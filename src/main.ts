@@ -1,6 +1,7 @@
 import { Octokit } from "@octokit/core";
 import { createAppAuth } from "@octokit/auth-app";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
+import { retry } from "@octokit/plugin-retry";
 import { throttling } from "@octokit/plugin-throttling";
 import { Project } from "./project.js";
 import { getGraphql, PaginatedOctokit } from "./utils.js";
@@ -27,7 +28,9 @@ async function getOpenPRs(octokit: PaginatedOctokit, organization: string, repos
 }
 
 function makeOctokit(appId: number, installationId: number, keyPath: string) {
-    const PaginatedOctokitConstructor = Octokit.plugin(paginateGraphQL, throttling)
+    // retry re-sends a request GitHub answers with a server error, such as the 502 it
+    // returns when a GraphQL query runs past its time limit; throttling handles rate limits.
+    const PaginatedOctokitConstructor = Octokit.plugin(paginateGraphQL, retry, throttling)
     return new PaginatedOctokitConstructor({
         authStrategy: createAppAuth,
         auth: {
