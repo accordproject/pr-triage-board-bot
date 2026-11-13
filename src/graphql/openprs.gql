@@ -12,6 +12,11 @@ query ($cursor: String, $searchQuery: String!) {
         state
       }
       mergeable,
+      labels(first:50) {
+        nodes {
+            name
+        }
+      }
       participants(first:100) {
         nodes {
             login
